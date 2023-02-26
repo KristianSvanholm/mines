@@ -79,27 +79,21 @@ func openCell(coords interface{}) {
 		PlantMines(c)
 		CalculateCells()
 		flip(c)
-		sendChanges()
-		return
-	}
-
-	if cell.Mine {
-		explode()
 	} else {
-		flip(c)
+		if cell.Mine {
+			explode()
+		} else {
+			flip(c)
+		}
 	}
 
 	checkWin()
-
 	sendChanges()
 }
 
 func checkWin() {
-	if totalCells == totalRevealed+totalMines && totalMines == totalFlags {
-		fmt.Println("Total Cells: ", totalCells)
-		fmt.Println("Total revealed: ", totalRevealed)
-		fmt.Println("Total mines: ", totalMines)
-		fmt.Println("WIN!")
+	if (totalCells == totalRevealed+totalMines) && totalMines == totalFlags {
+		InitField(20)
 	}
 }
 
