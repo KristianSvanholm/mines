@@ -8,5 +8,5 @@ Either play to finish the board or sabotage the other players.
 * [ ] Implement optional username input
 * [x] Implement networking for finishing a board
 	* [ ] Implement victory screen?
-* [ ] Implement live chat
+* [x] Implement live chat
 * [ ] Write readmes for build & run
