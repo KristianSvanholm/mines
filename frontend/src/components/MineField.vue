@@ -63,11 +63,27 @@
 
                 return "c"+cell.count
             },
+            updateCells(data){
+
+                for(let i = 0; i<data.updates.length; i++){
+                    const u = data.updates[i]
+                    const c = u.coords;
+
+                    const newRow = this.field[c.x].slice(0) 
+                    newRow[c.y] = u.cell
+                    this.$set(this.field, c.x, newRow)
+                }
+            },
+            reset: async function(){
+                this.field= await fetchField()
+            },
             handleMessage(data){
                 const msg = JSON.parse(data)
+                console.log(msg)
 
                 switch(msg.msgType){
-                    case "Update": this.field = msg.msgData; break;
+                    case "Update": this.updateCells(msg.msgData); break;
+                    case "Reset": this.reset(); break;
                     case "chat": this.receiveChat(msg.msgData); break;
                 }
             },
