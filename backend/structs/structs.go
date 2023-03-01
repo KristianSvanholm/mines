@@ -1,6 +1,9 @@
 package structs
 
-import "github.com/gorilla/websocket"
+import (
+	"github.com/gorilla/websocket"
+	"sync"
+)
 
 type ClientMsg struct {
 	MsgType string      `json:"msgType"`
@@ -9,7 +12,14 @@ type ClientMsg struct {
 
 type Player struct {
 	Ws   *websocket.Conn
+	mu   sync.Mutex
 	Name string
+}
+
+func (p *Player) Send(v interface{}) error {
+    p.mu.Lock()
+    defer p.mu.Unlock()
+    return p.Ws.WriteJSON(v)
 }
 
 type Cell struct {
