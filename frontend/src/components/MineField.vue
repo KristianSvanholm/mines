@@ -1,26 +1,30 @@
 <template>
-    <div v-if="field != null" id="game">
-        <div v-for="(i, x) in field" :key="x" class="row">
-            <div
-                class="cell"
-                :class="colorCell(cell)"
-                v-for="(cell, y) in i" 
-                :key="y" 
-                @click="leftClick(x,y)" 
-                @contextmenu.prevent="rightClick(x,y)"
-                >
-                <div v-if="!cell.flagged">{{ decodeCell(cell) }}</div>
-                <v-icon v-else>mdi-flag</v-icon>
+    <div id="content">
+        <div v-if="field != null" id="game">
+            <div v-for="(i, x) in field" :key="x" class="row">
+                <div
+                    class="cell"
+                    :class="colorCell(cell)"
+                    v-for="(cell, y) in i" 
+                    :key="y" 
+                    @click="leftClick(x,y)" 
+                    @contextmenu.prevent="rightClick(x,y)"
+                    >
+                    <div v-if="!cell.flagged">{{ decodeCell(cell) }}</div>
+                    <v-icon v-else>mdi-flag</v-icon>
+                </div>
             </div>
         </div>
+        <ChatCard id="chat"></ChatCard>
     </div>
 </template>
 
 <script>
-
+    import ChatCard from "@/components/chatCard.vue"
     import {fetchField} from "@/http/http"
     export default {
         name: 'MineField',
+        components:{ChatCard},
 
         data: () => ({
             field: null,
@@ -91,20 +95,33 @@
 
 <style>
 
+#content{
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
+
+#chat{
+    position: fixed;
+    margin-top: 40px;
+    left: 20px;
+}
+
 #game{
+    border: red 2p solid;
     margin: 50px;
     margin-left: auto;
     margin-right: auto;
     padding: 1px;
     border-radius: 10px;
-    width: 1000px;
+    width: 50%;
 }
 .cell{
-    width: 50px;
-    height: 50px;
+    width: 38px;
+    height: 38px;
     text-align: center;
     vertical-align: middle;
-    line-height: 50px;       /* The same as your div height */
+    line-height: 38px;       /* The same as your div height */
     border-radius: 3px;
 }
 
@@ -160,5 +177,6 @@
 
 .row{
     display: flex;
+    flex-wrap: nowrap;
 }
 </style>
