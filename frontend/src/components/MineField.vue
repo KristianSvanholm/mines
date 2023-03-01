@@ -15,7 +15,7 @@
                 </div>
             </div>
         </div>
-        <ChatCard id="chat"></ChatCard>
+        <ChatCard id="chat" ref="chat" @send="chat"></ChatCard>
     </div>
 </template>
 
@@ -46,6 +46,12 @@
                 // Send it
                 this.socket.send(JSON.stringify(msg))
             },
+            chat: function(msg){
+                this.send("chat", msg)
+            },
+            receiveChat(msg){
+                this.$refs.chat.receive(msg)
+            },
             decodeCell(cell){
                 if(cell.revealed){
                     return cell.count == 0 ? "": cell.count
@@ -61,7 +67,8 @@
                 const msg = JSON.parse(data)
 
                 switch(msg.msgType){
-                    case "Update": this.field = msg.msgData 
+                    case "Update": this.field = msg.msgData; break;
+                    case "chat": this.receiveChat(msg.msgData); break;
                 }
             },
             JoinLobby(){
