@@ -3,8 +3,9 @@ import axios from 'axios'
 let api;
 
 function startApi(){
+    const host = process.env.NODE_ENV === 'development' ? "localhost:8080" : window.location.host;
     api = axios.create({
-        baseURL: 'http://localhost:8080/api'
+        baseURL: `http://${host}/api`
     });
 
     api.interceptors.response.use((res) => {

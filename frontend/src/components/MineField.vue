@@ -61,8 +61,8 @@
                 }
             },
             JoinLobby(){
-                //const host = process.env.NODE_ENV === 'development' ? "localhost:8080" : window.location.host;
-                const url = `ws://localhost:8080/api/join`
+                const host = process.env.NODE_ENV === 'development' ? "localhost:8080" : window.location.host;
+                const url = `ws://${host}/api/join`
 
                 this.socket = new WebSocket(url)
 
