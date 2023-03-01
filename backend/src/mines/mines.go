@@ -1,6 +1,9 @@
 package mines
 
 import (
+	"bytes"
+	"crypto/md5"
+	"encoding/gob"
 	"fmt"
 	"github.com/mitchellh/mapstructure"
 	"math/rand"
@@ -35,7 +38,7 @@ func InitField(size int) {
 }
 
 func setFlag(coords interface{}) {
-	var c structs.Coords
+	var c *structs.Coords
 
 	err := mapstructure.Decode(coords, &c)
 	if err != nil {
@@ -57,8 +60,12 @@ func setFlag(coords interface{}) {
 		totalFlags--
 	}
 
-	checkWin()
-	sendChanges()
+	won := checkWin()
+	if won { // Dont send individual updates
+		return
+	}
+
+	sendChanges([]*structs.Coords{c})
 }
 
 func openCell(coords interface{}) {
@@ -74,41 +81,73 @@ func openCell(coords interface{}) {
 		return
 	}
 
+	var flipped []*structs.Coords
+
 	totalMoves++
 	if totalMoves == 1 {
 		PlantMines(c)
 		CalculateCells()
-		flip(c)
+		flipped = flip(c)
 	} else {
 		if cell.Mine {
 			explode()
+			return
 		} else {
-			flip(c)
+			flipped = flip(c)
 		}
 	}
 
-	checkWin()
-	sendChanges()
+	won := checkWin()
+	if won { // Dont send individual updates
+		return
+	}
+	sendChanges(flipped)
 }
 
-func checkWin() {
-	if (totalCells == totalRevealed+totalMines) && totalMines == totalFlags {
+func checkWin() bool {
+	b := (totalCells == totalRevealed+totalMines) && totalMines == totalFlags
+	if b {
 		SystemMessage("Win!")
+		msg := &structs.ClientMsg{MsgType: "Reset"}
+		sendToAll(msg)
 		InitField(20)
 	}
+	return b
 }
 
-func sendChanges() {
-	msg := structs.ClientMsg{MsgType: "Update", MsgData: Field}
-	sendToAll(&msg);
+func sendChanges(coords []*structs.Coords) {
+
+	var bytes bytes.Buffer
+	enc := gob.NewEncoder(&bytes) // Will read from network.
+	enc.Encode(Field)
+
+	var updateList []*structs.CellUpdate
+	for _, c := range coords {
+		cU := &structs.CellUpdate{
+			Coords: *c,
+			Cell:   Field[c.X][c.Y],
+		}
+		updateList = append(updateList, cU)
+	}
+
+	UpdateData := map[string]interface{}{
+		"updates":  updateList,
+		"checksum": md5.Sum(bytes.Bytes()),
+	}
+
+	msg := structs.ClientMsg{MsgType: "Update", MsgData: UpdateData}
+	sendToAll(&msg)
 }
 
 func explode() {
 	SystemMessage("Loss!")
+	msg := &structs.ClientMsg{MsgType: "Reset"}
+	sendToAll(msg)
 	InitField(20)
 }
 
-func flip(c *structs.Coords) {
+func flip(c *structs.Coords) []*structs.Coords {
+	var flipped []*structs.Coords
 	size := len(Field)
 
 	cell := &Field[c.X][c.Y]
@@ -116,9 +155,10 @@ func flip(c *structs.Coords) {
 	cell.Revealed = true
 	cell.Flagged = false
 	totalRevealed++
+	flipped = append(flipped, c)
 
 	if cell.TrueCount != 0 {
-		return
+		return flipped
 	}
 
 	mutX := []int{-1, 0, 1}
@@ -128,10 +168,11 @@ func flip(c *structs.Coords) {
 		for _, mY := range mutY {
 			mutC := structs.Coords{X: c.X + mX, Y: c.Y + mY}
 			if validCell(&mutC, size) && !Field[mutC.X][mutC.Y].Revealed {
-				flip(&mutC)
+				flipped = append(flipped, flip(&mutC)...)
 			}
 		}
 	}
+	return flipped
 }
 
 func validCell(c *structs.Coords, size int) bool {
