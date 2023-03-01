@@ -98,13 +98,8 @@ func checkWin() {
 }
 
 func sendChanges() {
-	for _, player := range Players {
-		msg := structs.ClientMsg{MsgType: "Update", MsgData: Field}
-		err := player.Ws.WriteJSON(msg)
-		if err != nil {
-			continue
-		}
-	}
+	msg := structs.ClientMsg{MsgType: "Update", MsgData: Field}
+	sendToAll(&msg);
 }
 
 func explode() {

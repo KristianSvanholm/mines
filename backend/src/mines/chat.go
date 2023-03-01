@@ -17,12 +17,7 @@ func SendChat(username string, data interface{}) {
 		"message": chat["message"],
 	}
 
-	for _, player := range Players {
-		msg := structs.ClientMsg{MsgType: "chat", MsgData: chatData}
-		err := player.Ws.WriteJSON(msg)
-		if err != nil {
-			continue
-		}
-	}
+	msg := structs.ClientMsg{MsgType: "chat", MsgData: chatData}
+	sendToAll(&msg)
 }
 
