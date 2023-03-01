@@ -93,6 +93,7 @@ func openCell(coords interface{}) {
 
 func checkWin() {
 	if (totalCells == totalRevealed+totalMines) && totalMines == totalFlags {
+		SystemMessage("Win!")
 		InitField(20)
 	}
 }
@@ -103,6 +104,7 @@ func sendChanges() {
 }
 
 func explode() {
+	SystemMessage("Loss!")
 	InitField(20)
 }
 

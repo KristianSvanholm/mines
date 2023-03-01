@@ -21,3 +21,13 @@ func SendChat(username string, data interface{}) {
 	sendToAll(&msg)
 }
 
+func SystemMessage(txt string){
+	chatData := map[string]interface{}{
+		"name":    "System",
+		"message": txt,
+	}
+
+	msg := structs.ClientMsg{MsgType: "chat", MsgData: chatData}
+	sendToAll(&msg)
+}
+
