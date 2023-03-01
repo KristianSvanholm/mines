@@ -30,6 +30,11 @@ type Cell struct {
 	Count     int  `json:"count"`
 }
 
+type CellUpdate struct {
+	Coords Coords `json:"coords"`
+	Cell Cell `json:"cell"`
+}
+
 type Coords struct {
 	X int `json:"x"`
 	Y int `json:"y"`
