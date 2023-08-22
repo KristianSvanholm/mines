@@ -8,13 +8,13 @@ func messageHandler(player *structs.Player, msg *structs.ClientMsg) {
 
 	switch msg.MsgType {
 	case "leftClick":
-		openCell(msg.MsgData)
+		openCell(msg.MsgData, player.Name)
 		break
 	case "rightClick":
 		setFlag(msg.MsgData)
 		break
 	case "chat":
-		SendChat("Bobby",msg.MsgData)
+		SendChat("Bobby", msg.MsgData)
 		break
 	default:
 		return

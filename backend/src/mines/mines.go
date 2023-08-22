@@ -61,7 +61,7 @@ func setFlag(coords interface{}) {
 	sendChanges()
 }
 
-func openCell(coords interface{}) {
+func openCell(coords interface{}, name string) {
 	var c *structs.Coords
 
 	err := mapstructure.Decode(coords, &c)
@@ -81,7 +81,7 @@ func openCell(coords interface{}) {
 		flip(c)
 	} else {
 		if cell.Mine {
-			explode()
+			explode(name)
 		} else {
 			flip(c)
 		}
@@ -100,11 +100,11 @@ func checkWin() {
 
 func sendChanges() {
 	msg := structs.ClientMsg{MsgType: "Update", MsgData: Field}
-	sendToAll(&msg);
+	sendToAll(&msg)
 }
 
-func explode() {
-	SystemMessage("Loss!")
+func explode(name string) {
+	SystemMessage(fmt.Sprintf("Loss! - %s fucked up", name))
 	InitField(20)
 }
 
