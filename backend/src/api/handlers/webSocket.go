@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/gorilla/websocket"
+	"math/rand"
 	"mines/src/api/errorHandler"
 	"mines/src/mines"
 	"mines/structs"
@@ -26,7 +28,7 @@ func ConnectWS(w http.ResponseWriter, r *http.Request) {
 
 	player := structs.Player{
 		Ws:   wsConnection,
-		Name: "bobby",
+		Name: fmt.Sprintf("bobby%d", rand.Intn(100)),
 	}
 
 	mines.Players = append(mines.Players, &player)
