@@ -26,7 +26,7 @@ func ConnectWS(w http.ResponseWriter, r *http.Request) {
 
 	player := structs.Player{
 		Ws:   wsConnection,
-		Name: "test",
+		Name: "bobby",
 	}
 
 	mines.Players = append(mines.Players, &player)

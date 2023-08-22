@@ -14,7 +14,7 @@ func messageHandler(player *structs.Player, msg *structs.ClientMsg) {
 		setFlag(msg.MsgData)
 		break
 	case "chat":
-		SendChat("Bobby", msg.MsgData)
+		SendChat(player.Name, msg.MsgData)
 		break
 	default:
 		return
