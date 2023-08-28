@@ -9,7 +9,6 @@ import (
 	"mines/src/mines"
 	"mines/structs"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 
@@ -17,8 +16,6 @@ import (
 )
 
 var adjectives = readFromFile("./src/api/handlers/adjectives.txt", 1532)
-
-//var nouns = readFromFile("./src/api/handlers/nouns.txt", 1323)
 
 var wsUpgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
@@ -36,16 +33,14 @@ func ConnectWS(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Find random words from slices
+	//Random seed
 	rand.Seed(time.Now().UnixNano())
+	//Find random adjective from file
 	ranAdj := rand.Intn(1333)
-	//ranNoun := rand.Intn(1524)
 	adj := adjectives[ranAdj]
-	//noun := nouns[ranNoun]
 
 	player := structs.Player{
-		Ws: wsConnection,
-		//Name: fmt.Sprintf(("%s%s"), strings.TrimSpace(strings.Title(adj)), strings.Title(noun)),
+		Ws:   wsConnection,
 		Name: fmt.Sprintf(("%sBobby"), strings.TrimSpace(strings.Title(adj))),
 	}
 
@@ -55,15 +50,14 @@ func ConnectWS(w http.ResponseWriter, r *http.Request) {
 
 //Read file
 func readFromFile(filename string, lines int) []string {
-	file, err := os.Open(filename)
+	//Open and read file
+	readWord, err := ioutil.ReadFile(filename)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
-
-	readWord, _ := ioutil.ReadFile(filename)
-	allWord := string(readWord)
-	listWord := strings.Split(allWord, "\n")
+	//Set file into string slice
+	stringWord := string(readWord)
+	listWord := strings.Split(stringWord, "\n")
 
 	return listWord
 }
